@@ -56,6 +56,7 @@ esbuild.build({
     }),
   ],
   format: 'cjs',
+  minify: prod,
   watch: !prod,
   target: 'chrome98',
   logLevel: "info",

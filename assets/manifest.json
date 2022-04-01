@@ -1,9 +1,9 @@
 {
   "id": "obsidian-auto-updated-date",
   "name": "Automatic 'updated' header",
-  "version": "1.0.1",
-  "minAppVersion": "0.12.0",
-  "description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
+  "version": "0.0.1",
+  "minAppVersion": "0.14.2",
+  "description": "This Obsidian plugin automatically adds an updated a front matter `updated` value to your notes",
   "author": "Obsidian",
   "authorUrl": "https://obsidian.md",
   "isDesktopOnly": false

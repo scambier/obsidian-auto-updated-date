@@ -1,7 +1,7 @@
 {
   "name": "obsidian-sample-plugin",
-  "version": "1.0.1",
-  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+  "version": "0.0.1",
+  "description": "This Obsidian plugin automatically adds an updated a front matter `updated` value to your notes.",
   "main": "dist/main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
