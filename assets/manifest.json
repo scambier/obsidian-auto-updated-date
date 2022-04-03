@@ -1,7 +1,7 @@
 {
   "id": "scambier.automatic-updated-date",
   "name": "Automatic updated header",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "minAppVersion": "0.14.2",
   "description": "This Obsidian plugin automatically adds a front matter `updated` field to your notes",
   "author": "scambier",

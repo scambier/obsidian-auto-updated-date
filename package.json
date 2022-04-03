@@ -1,6 +1,6 @@
 {
   "name": "obsidian-automatic-updated-date",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This Obsidian plugin automatically adds a front matter `updated` field to your notes",
   "main": "dist/main.js",
   "scripts": {
