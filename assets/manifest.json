@@ -6,5 +6,5 @@
   "description": "This Obsidian plugin automatically adds a front matter `updated` field to your notes",
   "author": "scambier",
   "authorUrl": "https://github.com/scambier/obsidian-auto-updated-date",
-  "isDesktopOnly": true
+  "isDesktopOnly": false
 }
