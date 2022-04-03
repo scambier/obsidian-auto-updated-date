@@ -17,13 +17,13 @@ export const DEFAULT_SETTINGS: AutoUpdatedDatePluginSettings = {
 export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
   plugin: AutoUpdatePlugin
 
-  constructor(app: App, plugin: AutoUpdatePlugin) {
-    super(app, plugin);
-    this.plugin = plugin;
+  constructor (app: App, plugin: AutoUpdatePlugin) {
+    super(app, plugin)
+    this.plugin = plugin
   }
 
-  display(): void {
-    let { containerEl } = this
+  display (): void {
+    const { containerEl } = this
     containerEl.empty()
 
     new Setting(containerEl)
@@ -33,8 +33,8 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
         .setValue(this.plugin.settings.dateFormat)
         .onChange(async (value) => {
           this.plugin.settings.dateFormat = value
-          await this.plugin.saveSettings();
-        }));
+          await this.plugin.saveSettings()
+        }))
 
     new Setting(containerEl)
       .setName('Field name')
@@ -43,12 +43,12 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
         .setPlaceholder(DEFAULT_SETTINGS.fieldName)
         .setValue(this.plugin.settings.fieldName)
         .onChange(async (value) => {
-          this.plugin.settings.fieldName = value || DEFAULT_SETTINGS.fieldName;
-          await this.plugin.saveSettings();
-        }));
+          this.plugin.settings.fieldName = value || DEFAULT_SETTINGS.fieldName
+          await this.plugin.saveSettings()
+        }))
 
     new Setting(containerEl)
-      .setName("Create the field")
+      .setName('Create the field')
       .setDesc("Automatically create the YAML field if it doesn't exist.")
       .addToggle((toggle) => toggle
         .setValue(this.plugin.settings.createField)
@@ -60,22 +60,21 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
             this.plugin.settings.createFrontMatter = false
             this.display()
           }
-          this.plugin.settings.createField = value;
-          await this.plugin.saveSettings();
-        }));
+          this.plugin.settings.createField = value
+          await this.plugin.saveSettings()
+        }))
 
     const createFrontMatter = new Setting(containerEl)
-      .setName("Create the Front Matter block")
+      .setName('Create the Front Matter block')
       .setDesc("Automatically create a YAML Front Matter block if it doesn't exist. The toggle \"Create the field\" must be checked.")
       .addToggle((toggle) => {
         toggle.disabled = !this.plugin.settings.createField
         return toggle
           .setValue(this.plugin.settings.createFrontMatter)
           .onChange(async (value) => {
-            this.plugin.settings.createFrontMatter = value;
-            await this.plugin.saveSettings();
+            this.plugin.settings.createFrontMatter = value
+            await this.plugin.saveSettings()
           })
-      });
+      })
   }
-
 }

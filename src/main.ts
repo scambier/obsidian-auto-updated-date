@@ -1,30 +1,34 @@
 import { MarkdownView, Plugin, moment, TAbstractFile, TFile } from 'obsidian'
-import { AutoUpdatedDatePluginSettings, AutoUpdatedDatePluginSettingsTab, DEFAULT_SETTINGS } from './settings'
+import {
+  AutoUpdatedDatePluginSettings,
+  AutoUpdatedDatePluginSettingsTab,
+  DEFAULT_SETTINGS
+} from './settings'
 import * as matter from 'gray-matter'
 
 export default class AutoUpdatedDatePlugin extends Plugin {
   settings: AutoUpdatedDatePluginSettings
 
-  async onload() {
+  async onload () {
     await this.loadSettings()
     this.addSettingTab(new AutoUpdatedDatePluginSettingsTab(this.app, this))
-
     this.registerEvent(this.app.vault.on('modify', this.updateDate))
   }
 
-  onunload() {
-  }
+  onunload () {}
 
-  async loadSettings() {
+  async loadSettings () {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
   }
 
-  async saveSettings() {
+  async saveSettings () {
     await this.saveData(this.settings)
   }
 
   updateDate = async (file: TAbstractFile) => {
-    if (!(file instanceof TFile)) { return }
+    if (!(file instanceof TFile)) {
+      return
+    }
     const view = this.app.workspace.getActiveViewOfType(MarkdownView)
     const contents = await this.app.vault.cachedRead(file)
 
@@ -43,10 +47,12 @@ export default class AutoUpdatedDatePlugin extends Plugin {
     }
 
     // Update the value
-    parsed.data[this.settings.fieldName] = moment(Date.now()).format(this.settings.dateFormat)
+    parsed.data[this.settings.fieldName] = moment(Date.now()).format(
+      this.settings.dateFormat
+    )
 
     // Serialize back
-    const frontMatter = matter.stringify("", parsed.data).trim()
+    const frontMatter = matter.stringify('', parsed.data).trim()
     const newContent = `${frontMatter}
 ${parsed.content}` // Use a "raw" line return instead of \r\n
 
@@ -54,7 +60,7 @@ ${parsed.content}` // Use a "raw" line return instead of \r\n
   }
 }
 
-function deserializeMarkdown(md: string): matter.GrayMatterFile<string> {
+function deserializeMarkdown (md: string): matter.GrayMatterFile<string> {
   // @ts-ignore
   return matter.default(md)
 }
