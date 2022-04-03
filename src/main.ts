@@ -33,7 +33,7 @@ export default class AutoUpdatedDatePlugin extends Plugin {
     const contents = await this.app.vault.cachedRead(file)
 
     // Check the presence of a front matter block
-    const hasFrontMatter = contents.startsWith('---')
+    const hasFrontMatter = /^---.*---/gs.test(contents)
     if (!hasFrontMatter && !this.settings.createFrontMatter) {
       return
     }
