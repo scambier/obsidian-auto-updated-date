@@ -54,14 +54,14 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
         .setValue(this.plugin.settings.createField)
         .onChange(async (value) => {
           createFrontMatter.setDisabled(!value)
+          this.plugin.settings.createField = value
           if (!value) {
             // Automatically disable the createFrontMatter toggle and
             // reload the settings view
             this.plugin.settings.createFrontMatter = false
-            this.display()
           }
-          this.plugin.settings.createField = value
           await this.plugin.saveSettings()
+          setTimeout(() => this.display(), 200)
         }))
 
     const createFrontMatter = new Setting(containerEl)
