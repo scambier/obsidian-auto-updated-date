@@ -1,6 +1,6 @@
 {
   "name": "obsidian-automatic-updated-date",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "This Obsidian plugin automatically adds a front matter `updated` field to your notes",
   "main": "dist/main.js",
   "scripts": {
@@ -25,13 +25,11 @@
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
     "obsidian": "latest",
     "prettier": "^2.6.2",
     "prettier-eslint": "^13.0.0",
     "tslib": "2.3.1",
     "typescript": "4.4.4"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3"
   }
 }

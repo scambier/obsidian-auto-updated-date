@@ -2,65 +2,78 @@ import { MarkdownView, Plugin, moment, TAbstractFile, TFile } from 'obsidian'
 import {
   AutoUpdatedDatePluginSettings,
   AutoUpdatedDatePluginSettingsTab,
-  DEFAULT_SETTINGS
+  DEFAULT_SETTINGS,
 } from './settings'
-import * as matter from 'gray-matter'
+
+// Adapted from https://github.com/jekyll/jekyll/blob/7c4f319442b6b7a457d35cef2fc1b7a480b30850/lib/jekyll/document.rb#L9
+const frontMatterRegex = /^---\s*\n(.*?)\n?^---\s+/ms
 
 export default class AutoUpdatedDatePlugin extends Plugin {
   settings: AutoUpdatedDatePluginSettings
 
-  async onload () {
+  async onload(): Promise<void> {
     await this.loadSettings()
     this.addSettingTab(new AutoUpdatedDatePluginSettingsTab(this.app, this))
     this.registerEvent(this.app.vault.on('modify', this.updateDate))
   }
 
-  onunload () {}
+  onunload(): void {}
 
-  async loadSettings () {
+  async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
   }
 
-  async saveSettings () {
+  async saveSettings(): Promise<void> {
     await this.saveData(this.settings)
   }
 
-  updateDate = async (file: TAbstractFile) => {
+  updateDate = async (file: TAbstractFile): Promise<void> => {
     if (!(file instanceof TFile)) {
       return
     }
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView)
     const contents = await this.app.vault.cachedRead(file)
 
     // Check the presence of a front matter block
-    const hasFrontMatter = /^---.*---/gs.test(contents)
-    if (!hasFrontMatter && !this.settings.createFrontMatter) {
-      return
-    }
+    let frontMatterRE = frontMatterRegex.exec(contents)
 
-    // Parse data to separate header from content
-    const parsed = deserializeMarkdown(contents)
+    if (!frontMatterRE) {
+      if (!this.settings.createFrontMatter) {
+        // console.log('no front matter block, ignoring')
+        return
+      }
+      else {
+        frontMatterRE = frontMatterRegex.exec('---\n---\n')
+      }
+    }
+    let serializedFrontMatter = frontMatterRE[1].trim()
+
+    // /^updated:(.*)$/m
+    const updatedRegex = new RegExp(`^${this.settings.fieldName}:(.*)$`, 'm')
+    const updatedValueRE = updatedRegex.exec(serializedFrontMatter)
 
     // If the field does not exist, check that we can create it
-    if (!parsed.data[this.settings.fieldName] && !this.settings.createField) {
-      return
+    if (!updatedValueRE || !updatedValueRE[1]) {
+      if (!this.settings.createField) {
+        // console.log(`no ${this.settings.fieldName} field, ignoring`)
+        return
+      }
+      else {
+        serializedFrontMatter = `${this.settings.fieldName}: [placeholder]`
+      }
     }
-
-    // Update the value
-    parsed.data[this.settings.fieldName] = moment(Date.now()).format(
-      this.settings.dateFormat
+    const formattedDate = moment(Date.now()).format(this.settings.dateFormat)
+    serializedFrontMatter = serializedFrontMatter.replace(
+      updatedRegex,
+      `${this.settings.fieldName}: ${formattedDate}`,
     )
 
-    // Serialize back
-    const frontMatter = matter.stringify('', parsed.data).trim()
-    const newContent = `${frontMatter}
-${parsed.content}` // Use a "raw" line return instead of \r\n
-
-    view.setViewData(newContent, false)
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView)
+    view.setViewData(
+      `---
+${serializedFrontMatter}
+---
+${contents.replace(frontMatterRegex, '')}`,
+      false,
+    )
   }
-}
-
-function deserializeMarkdown (md: string): matter.GrayMatterFile<string> {
-  // @ts-ignore
-  return matter.default(md)
 }

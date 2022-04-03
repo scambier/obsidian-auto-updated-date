@@ -16,6 +16,7 @@ When writing, reviewing, and sharing notes, it is often useful to have a timesta
 
 ## TODO
 
+- [ ] Working on mobile - why doesn't it work?
 - [ ] Command to quickly toggle the plugin
   - [ ] Add a "blacklist" or "whitelist" option to exclude certain files?
 - [ ] Moment locale override?
