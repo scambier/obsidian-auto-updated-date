@@ -46,7 +46,7 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
           .setPlaceholder(DEFAULT_SETTINGS.fieldName)
           .setValue(this.plugin.settings.fieldName)
           .onChange(async value => {
-            this.plugin.settings.fieldName = value || DEFAULT_SETTINGS.fieldName
+            this.plugin.settings.fieldName = value
             await this.plugin.saveSettings()
           }),
       )

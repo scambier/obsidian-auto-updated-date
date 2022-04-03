@@ -21,6 +21,8 @@ export default class AutoUpdatedDatePlugin extends Plugin {
 
   async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
+    this.settings.fieldName =
+      this.settings.fieldName || DEFAULT_SETTINGS.fieldName
   }
 
   async saveSettings(): Promise<void> {
@@ -45,26 +47,30 @@ export default class AutoUpdatedDatePlugin extends Plugin {
         frontMatterRE = frontMatterRegex.exec('---\n---\n')
       }
     }
-    let serializedFrontMatter = frontMatterRE[1].trim()
+    let serializedFrontMatter = frontMatterRE[1]
 
     // /^updated:(.*)$/m
-    const updatedRegex = new RegExp(`^${this.settings.fieldName}:(.*)$`, 'm')
+    const fieldName = this.settings.fieldName
+    const updatedRegex = new RegExp(`^${fieldName}:(.*)$`, 'm')
     const updatedValueRE = updatedRegex.exec(serializedFrontMatter)
 
     // If the field does not exist, check that we can create it
     if (!updatedValueRE || !updatedValueRE[1]) {
       if (!this.settings.createField) {
-        // console.log(`no ${this.settings.fieldName} field, ignoring`)
+        // console.log(`no ${fieldName} field, ignoring`)
         return
       }
       else {
-        serializedFrontMatter = `${this.settings.fieldName}: [placeholder]`
+        // Appends the "updated" field, preceded by a newline if the block is not empty
+        serializedFrontMatter += `${
+          serializedFrontMatter ? '\n' : ''
+        }${fieldName}: [placeholder]`
       }
     }
     const formattedDate = moment(Date.now()).format(this.settings.dateFormat)
     serializedFrontMatter = serializedFrontMatter.replace(
       updatedRegex,
-      `${this.settings.fieldName}: ${formattedDate}`,
+      `${fieldName}: ${formattedDate}`,
     )
 
     const view = this.app.workspace.getActiveViewOfType(MarkdownView)
