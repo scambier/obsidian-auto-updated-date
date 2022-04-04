@@ -4,12 +4,14 @@ import AutoUpdatePlugin from './main'
 export interface AutoUpdatedDatePluginSettings {
   dateFormat?: string
   fieldName: string
+  useQuotes: boolean
   createField: boolean
   createFrontMatter: boolean
 }
 
 export const DEFAULT_SETTINGS: AutoUpdatedDatePluginSettings = {
   fieldName: 'updated',
+  useQuotes: true,
   createField: false,
   createFrontMatter: false,
 } as const
@@ -47,6 +49,18 @@ export class AutoUpdatedDatePluginSettingsTab extends PluginSettingTab {
           .setValue(this.plugin.settings.fieldName)
           .onChange(async value => {
             this.plugin.settings.fieldName = value
+            await this.plugin.saveSettings()
+          }),
+      )
+
+    new Setting(containerEl)
+      .setName('Use quotes')
+      .setDesc('Surround the datetime value in quotes')
+      .addToggle(toggle =>
+        toggle
+          .setValue(this.plugin.settings.useQuotes)
+          .onChange(async value => {
+            this.plugin.settings.useQuotes = value
             await this.plugin.saveSettings()
           }),
       )

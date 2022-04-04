@@ -6,7 +6,7 @@ import {
 } from './settings'
 
 // Adapted from https://github.com/jekyll/jekyll/blob/7c4f319442b6b7a457d35cef2fc1b7a480b30850/lib/jekyll/document.rb#L9
-const frontMatterRegex = /^---\s*\n(.*?)\n?^---\s+/ms
+const frontMatterRegex = /^---\s*\n(.*?)\n?^---\s?/ms
 
 export default class AutoUpdatedDatePlugin extends Plugin {
   settings: AutoUpdatedDatePluginSettings
@@ -14,10 +14,12 @@ export default class AutoUpdatedDatePlugin extends Plugin {
   async onload(): Promise<void> {
     await this.loadSettings()
     this.addSettingTab(new AutoUpdatedDatePluginSettingsTab(this.app, this))
-    this.registerEvent(this.app.vault.on('modify', this.updateDate))
+    this.app.vault.on('modify', this.updateDate)
   }
 
-  onunload(): void {}
+  onunload(): void {
+    this.app.vault.off('modify', this.updateDate)
+  }
 
   async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
@@ -33,14 +35,13 @@ export default class AutoUpdatedDatePlugin extends Plugin {
     if (!(file instanceof TFile)) {
       return
     }
-    const contents = await this.app.vault.cachedRead(file)
+    const contents = await this.app.vault.read(file)
 
     // Check the presence of a front matter block
     let frontMatterRE = frontMatterRegex.exec(contents)
 
     if (!frontMatterRE) {
       if (!this.settings.createFrontMatter) {
-        // console.log('no front matter block, ignoring')
         return
       }
       else {
@@ -57,7 +58,6 @@ export default class AutoUpdatedDatePlugin extends Plugin {
     // If the field does not exist, check that we can create it
     if (!updatedValueRE || !updatedValueRE[1]) {
       if (!this.settings.createField) {
-        // console.log(`no ${fieldName} field, ignoring`)
         return
       }
       else {
@@ -67,19 +67,26 @@ export default class AutoUpdatedDatePlugin extends Plugin {
         }${fieldName}: [placeholder]`
       }
     }
-    const formattedDate = moment(Date.now()).format(this.settings.dateFormat)
-    serializedFrontMatter = serializedFrontMatter.replace(
+
+    const quote = this.settings.useQuotes ? '"' : ''
+    const date = moment(Date.now()).format(this.settings.dateFormat)
+    const formattedDate = `${quote}${date}${quote}`
+
+    const newFrontMatter = serializedFrontMatter.replace(
       updatedRegex,
       `${fieldName}: ${formattedDate}`,
     )
 
-    const view = this.app.workspace.getActiveViewOfType(MarkdownView)
-    view.setViewData(
-      `---
-${serializedFrontMatter}
+    const newContent = `---
+${newFrontMatter}
 ---
-${contents.replace(frontMatterRegex, '')}`,
-      false,
-    )
+${contents.replace(frontMatterRegex, '')}`
+
+    // Disable the listener while we're writing to avoid loop-triggering the 'modify' envent
+    this.app.vault.off('modify', this.updateDate)
+    await this.app.vault.modify(file, newContent)
+    setTimeout(() => {
+      this.app.vault.on('modify', this.updateDate)
+    }, 0)
   }
 }
