@@ -13,10 +13,10 @@ When writing, reviewing, and sharing notes, it is often useful to have a timesta
 - [x] Field name customization
 - [x] Option to create the front matter if it doesn't exist
 - [x] Option to add the field if it doesn't exist
+- [x] Works on mobile
 
 ## TODO
 
-- [ ] Working on mobile - why doesn't it work?
 - [ ] Command to quickly toggle the plugin
   - [ ] Add a "blacklist" or "whitelist" option to exclude certain files?
 - [ ] Moment locale override?
