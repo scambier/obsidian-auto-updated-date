@@ -1,3 +1,7 @@
+**DO NOT USE - BUGGY**
+
+This plugin will trigger a self-feeding update loop if the same file is open on 2 different editors.
+
 # Obsidian Automatic 'updated' Header
 
 This Obsidian plugin automatically adds a front matter `updated` field to your notes. This field is automatically updated to the current date and time whenever you save a note.
