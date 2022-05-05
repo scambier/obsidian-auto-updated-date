@@ -1,4 +1,7 @@
-**DO NOT USE - BUGGY**
+⚠️ **DO NOT USE - BUGGY**  
+✅ Use [Obsidian Linter](https://github.com/platers/obsidian-linter) instead.
+
+---
 
 This plugin will trigger a self-feeding update loop if the same file is open on 2 different editors.
 
